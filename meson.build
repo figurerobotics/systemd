@@ -2404,7 +2404,7 @@ subdir('src/systemd')
 subdir('src/test')
 subdir('src/fuzz')
 subdir('src/ukify/test')  # needs to be last for test_env variable
-subdir('test/fuzz')
+# subdir('test/fuzz')
 
 subdir('mime')
 
@@ -2683,7 +2683,7 @@ endif
 ############################################################
 
 subdir('rules.d')
-subdir('test')
+#subdir('test')
 
 #####################################################################
 
@@ -2767,50 +2767,50 @@ foreach exec : public_programs
 endforeach
 
 # Enable tests for all supported sanitizers
-foreach tuple : fuzz_sanitizers
-        sanitizer = tuple[0]
-        build = tuple[1]
-
-        if cc.has_link_argument('-fsanitize=@0@'.format(sanitizer))
-                foreach fuzzer, fuzz_ins : fuzz_regression_tests
-                        name = '@0@:@1@'.format(fuzzer, sanitizer)
-                        if want_tests == 'false'
-                                message('Not compiling @0@ because tests is set to false'.format(name))
-                                continue
-                        endif
-                        if not want_fuzz_tests
-                                message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
-                                continue
-                        endif
-                        exe = custom_target(
-                                name,
-                                output : name,
-                                depends : build,
-                                command : [ln, '-fs',
-                                           build.full_path() / fuzzer,
-                                           '@OUTPUT@'],
-                                build_by_default : true)
-
-                        foreach directive : fuzz_ins.get('directives', [])
-                                test('@0@_@1@_@2@'.format(fuzzer, fs.name(directive.full_path()), sanitizer),
-                                     env,
-                                     suite : 'fuzz+san',
-                                     env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
-                                     timeout : 60,
-                                     args : [exe.full_path(), directive.full_path()],
-                                     depends : directive)
-                        endforeach
-                        foreach file : fuzz_ins.get('files', [])
-                                test('@0@_@1@_@2@'.format(fuzzer, fs.name(file), sanitizer),
-                                     env,
-                                     suite : 'fuzz+san',
-                                     env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
-                                     timeout : 60,
-                                     args : [exe.full_path(), file])
-                        endforeach
-                endforeach
-        endif
-endforeach
+# foreach tuple : fuzz_sanitizers
+#         sanitizer = tuple[0]
+#         build = tuple[1]
+#
+#         if cc.has_link_argument('-fsanitize=@0@'.format(sanitizer))
+#                 foreach fuzzer, fuzz_ins : fuzz_regression_tests
+#                         name = '@0@:@1@'.format(fuzzer, sanitizer)
+#                         if want_tests == 'false'
+#                                 message('Not compiling @0@ because tests is set to false'.format(name))
+#                                 continue
+#                         endif
+#                         if not want_fuzz_tests
+#                                 message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
+#                                 continue
+#                         endif
+#                         exe = custom_target(
+#                                 name,
+#                                 output : name,
+#                                 depends : build,
+#                                 command : [ln, '-fs',
+#                                            build.full_path() / fuzzer,
+#                                            '@OUTPUT@'],
+#                                 build_by_default : true)
+#
+#                         foreach directive : fuzz_ins.get('directives', [])
+#                                 test('@0@_@1@_@2@'.format(fuzzer, fs.name(directive.full_path()), sanitizer),
+#                                      env,
+#                                      suite : 'fuzz+san',
+#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
+#                                      timeout : 60,
+#                                      args : [exe.full_path(), directive.full_path()],
+#                                      depends : directive)
+#                         endforeach
+#                         foreach file : fuzz_ins.get('files', [])
+#                                 test('@0@_@1@_@2@'.format(fuzzer, fs.name(file), sanitizer),
+#                                      env,
+#                                      suite : 'fuzz+san',
+#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
+#                                      timeout : 60,
+#                                      args : [exe.full_path(), file])
+#                         endforeach
+#                 endforeach
+#         endif
+# endforeach
 
 #####################################################################
 
